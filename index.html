@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For Aditiii — Valentine Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root { --bg1: #800000; --bg2: #4d0000; --accent: #ffb3b3; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--bg1), var(--bg2)); animation: fadeIn 2s ease-in forwards; }
+  @keyframes fadeIn { 0% {opacity:0; transform:scale(0.95);} 100% {opacity:1; transform:scale(1);} }
+  .wrap { width: 100%; max-width: 980px; padding: 28px; display: flex; gap: 28px; align-items: center; justify-content: center; animation: slideUp 2s ease-out forwards; }
+  @keyframes slideUp { 0% {transform: translateY(50px); opacity:0;} 100% {transform: translateY(0); opacity:1;} }
+  .card { position: relative; width: 420px; height: 760px; border-radius: 26px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.3); background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75)); backdrop-filter: blur(6px); animation: popIn 1.2s cubic-bezier(.2,.9,.2,1) forwards; }
+  @keyframes popIn { 0% {transform:scale(0.85); opacity:0;} 100% {transform:scale(1); opacity:1;} }
+  .card-header { padding:20px 22px; display:flex; align-items:center; gap:12px; }
+  .avatar { width:64px; height:64px; border-radius:16px; overflow:hidden; border:3px solid rgba(255,255,255,0.6); cursor:pointer; transition:transform 0.3s ease; }
+  .avatar:hover { transform: scale(1.1); }
+  .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .who h1 { margin:0; font-size:18px; color:#000; }
+  .card-main { position:relative; padding:18px 22px; display:flex; flex-direction:column; gap:12px; height:calc(100% - 140px); }
+  .hero { flex:1; border-radius:16px; background:linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6)); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; animation: fadeInHero 3s ease-out forwards; }
+  @keyframes fadeInHero { 0% {opacity:0; transform:scale(0.95);} 100% {opacity:1; transform:scale(1);} }
+  .hero .text { position:relative; text-align:center; padding:18px; }
+  .title { font-family:Pacifico, Inter, sans-serif; font-size:48px; color:var(--accent); margin:0; animation: textFade 2s ease-in forwards; }
+  .subtitle { margin-top:6px; font-size:16px; color:#333; animation: textFade 2s ease-in forwards; }
+  @keyframes textFade { 0% {opacity:0; transform:translateY(10px);} 100% {opacity:1; transform:translateY(0);} }
+  .controls { display:flex; gap:8px; align-items:center; justify-content:center; padding-top:8px; }
+  .btn { background:var(--accent); color:#4d0000; padding:10px 14px; border-radius:12px; border:0; font-weight:600; cursor:pointer; box-shadow:0 8px 20px rgba(255,179,179,0.3); transition:transform 0.2s ease; }
+  .btn:hover { transform:scale(1.05); }
+  .btn.ghost { background:transparent; color:var(--accent); border:1px solid rgba(255,179,179,0.4); }
+  .hearts { position:absolute; inset:0; pointer-events:none; }
+  .heart { position:absolute; width:18px; height:18px; transform:translate(-50%,-50%) rotate(-20deg); opacity:0; }
+  .heart svg { width:100%; height:100%; display:block; }
+  @media (max-width:520px){ .wrap{padding:12px;} .card{width:330px;height:700px;border-radius:20px;} .title{font-size:42px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" id="card">
+    <div class="card-header">
+      <div class="avatar" id="avatar"><img id="avatarImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><rect width='100%' height='100%' fill='%23f7c6d6'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='72' fill='%23fff'>A</text></svg>" alt="A"></div>
+      <div class="who"><h1 id="titleName">For Aditiii</h1></div>
+    </div>
+
+    <div class="card-main">
+      <div class="hero" id="hero">
+        <div class="text">
+          <h2 class="title" id="heroTitle">Will you be my Valentine??</h2>
+          <div class="subtitle" id="heroSub">Love you always ❤️</div>
+        </div>
+        <div class="hearts" id="hearts"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn ghost" id="musicToggle">Play Music</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Dropbox direct link -->
+<audio id="bgAudio" loop crossorigin="anonymous" src="https://dl.dropboxusercontent.com/scl/fi/zi0q2brw2saspn520rjyv/valentine-song-3.mp3"></audio>
+
+<script>
+const card = document.getElementById('card');
+const hearts = document.getElementById('hearts');
+const hero = document.getElementById('hero');
+const musicToggle = document.getElementById('musicToggle');
+const bgAudio = document.getElementById('bgAudio');
+
+// Smooth fade-in for music
+bgAudio.volume = 0;
+bgAudio.addEventListener('play', () => {
+  let v = 0;
+  const fade = setInterval(() => {
+    v += 0.05;
+    bgAudio.volume = v;
+    if (v >= 0.7) clearInterval(fade);
+  }, 200);
+});
+
+function makeHeart(x,y,size,color){
+  const el=document.createElement('div');
+  el.className='heart';
+  el.style.left=x+'px';
+  el.style.top=y+'px';
+  el.style.width=size+'px';
+  el.style.height=size+'px';
+  el.innerHTML=`<svg viewBox='0 0 24 24' fill='${color}' xmlns='http://www.w3.org/2000/svg'><path d='M12 21s-7.5-4.35-10-7.09C-0.12 10.56 2.54 5 7.05 5c2.21 0 3.88 1.13 4.95 2.39C13.07 6.12 14.74 5 16.95 5 21.46 5 24.12 10.56 22 13.91 19.5 16.65 12 21 12 21z'/></svg>`;
+  hearts.appendChild(el);
+  requestAnimationFrame(()=>{
+    el.style.transition='transform 900ms cubic-bezier(.2,.9,.2,1), opacity 900ms linear';
+    el.style.transform='translateY(-140px) scale(1.4) rotate(-12deg)';
+    el.style.opacity='1';
+  });
+  setTimeout(()=>{
+    el.style.opacity='0';
+    el.style.transform='translateY(-220px) scale(0.9) rotate(-12deg)';
+  },800);
+  setTimeout(()=>el.remove(),1800);
+}
+
+hero.addEventListener('click',(e)=>{
+  const rect=hero.getBoundingClientRect();
+  const x=e.clientX-rect.left;
+  const y=e.clientY-rect.top;
+  for(let i=0;i<3;i++){
+    const sx=x+(Math.random()*40-20);
+    const sy=y+(Math.random()*40-20);
+    const size=14+Math.random()*18;
+    const color=`hsl(${330+Math.random()*30},80%,60%)`;
+    setTimeout(()=>makeHeart(sx,sy,size,color),i*80);
+  }
+});
+
+musicToggle.addEventListener('click',async()=>{
+  if(bgAudio.paused){
+    await bgAudio.play().catch(e=>console.warn(e));
+    musicToggle.textContent='Pause Music';
+    musicToggle.classList.remove('ghost');
+  } else {
+    bgAudio.pause();
+    musicToggle.textContent='Play Music';
+    musicToggle.classList.add('ghost');
+  }
+});
+
+let angle=0;function animateDecor(){angle+=0.6;const r=6*Math.sin(angle*Math.PI/180);card.style.transform=`translateY(${-r}px)`;requestAnimationFrame(animateDecor);}requestAnimationFrame(animateDecor);
+</script>
+</body>
+</html>
